@@ -1,0 +1,32 @@
+# Caddyfile
+
+# Define the site address
+localhost:50055 {
+    log {
+        level debug 
+    }
+
+    # Route to PingService
+    reverse_proxy /pingpong.PingService/* {
+        to h2c://localhost:50051
+        transport http {
+            versions h2c 2
+        }
+    }
+    
+    # Route to PongService
+    reverse_proxy /pingpong.PongService/* {
+        to h2c://localhost:50052
+        transport http {
+            versions h2c 2
+        }
+    }
+
+    # Route to reflection service
+    reverse_proxy /grpc.reflection.* {
+        to h2c://localhost:50057
+        transport http {
+            versions h2c 2
+        }
+    }
+}

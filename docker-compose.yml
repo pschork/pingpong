@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "50054:50054"
+      - "8080:8080"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./logs:/var/log/traefik
+
+  ping:
+    image: ping:latest
+    container_name: ping
+    ports:
+      - 50051:50051
+
+  pong:
+    image: pong:latest
+    container_name: pong
+    ports:
+      - 50052:50052
+
+  reflector:
+    image: reflector:latest
+    container_name: reflector
+    ports:
+      - 50057:50057

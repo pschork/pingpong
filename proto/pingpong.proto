@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package pingpong;
+
+option go_package = "pingpong/pkg/pingpong"; // Update this path accordingly
+
+service PingService {
+  rpc Ping (PingRequest) returns (PingResponse);
+}
+
+service PongService {
+  rpc Pong (PongRequest) returns (PongResponse);
+}
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string reply = 1;
+}
+
+message PongRequest {
+  string message = 1;
+}
+
+message PongResponse {
+  string reply = 1;
+}

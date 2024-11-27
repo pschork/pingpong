@@ -1,0 +1,35 @@
+http:
+  routers:
+    ping_router:
+      rule: "PathPrefix(`/pingpong.PingService`)"
+      service: ping_service
+      entryPoints:
+        - grpc
+
+    pong_router:
+      rule: "PathPrefix(`/pingpong.PongService`)"
+      service: pong_service
+      entryPoints:
+        - grpc
+
+    reflect_router:
+      rule: "PathPrefix(`/grpc.reflection`)"
+      service: reflector_service
+      entryPoints:
+        - grpc
+
+  services:
+    ping_service:
+      loadBalancer:
+        servers:
+          - url: "h2c://ping:50051"
+
+    pong_service:
+      loadBalancer:
+        servers:
+          - url: "h2c://pong:50052"
+
+    reflector_service:
+      loadBalancer:
+        servers:
+          - url: "h2c://reflector:50057"

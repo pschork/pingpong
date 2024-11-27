@@ -1,0 +1,23 @@
+accessLog:
+  filePath: "/var/log/traefik/access.log"  # Specify a file to log access requests
+  format: json  # Optional: log format can be JSON for easier parsing
+
+entryPoints:
+     grpc:
+       address: ":50054"  # gRPC entry point
+
+providers:
+  file:
+    filename: "/etc/traefik/dynamic.yml"
+
+log:
+  level: DEBUG  # Set log level to DEBUG
+  format: json
+
+api:
+  insecure: true
+  dashboard: true  # Enable the Traefik dashboard
+
+metrics:
+  prometheus:
+    buckets: [0.1, 0.3, 1.5, 10]  # Optional: define custom buckets for histogram
