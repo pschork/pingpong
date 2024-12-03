@@ -8,6 +8,8 @@ import (
 	pb "pingpong/pingpong/pkg/pingpong"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -31,9 +33,13 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterPongServiceServer(grpcServer, &PongServer{})
 
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+
 	reflection.Register(grpcServer)
 
-	log.Printf("PongService is running on port %s...", port)
+	log.Printf("PongService is running with health on port %s...", port)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve gRPC server: %v", err)
 	}
