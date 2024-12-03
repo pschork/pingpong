@@ -13,6 +13,13 @@ spec:
     name: ping-container
     ports:
       - containerPort: 50051
+      - containerPort: 50061
+    livenessProbe:
+      httpGet:
+        path: /healthz  # Specify the path for health check
+        port: 50061      # Use the healthPort defined above
+      initialDelaySeconds: 1
+      periodSeconds: 10
   restartPolicy: Always
   tolerations:
     - key: "disperser-v2"
@@ -30,7 +37,12 @@ spec:
     app: ping-app
   ports:
   - protocol: TCP
+    name: grpc
     port: 50051
     targetPort: 50051
+  - protocol: TCP
+    name: health
+    port: 50061
+    targetPort: 50061
   type: ClusterIP
 

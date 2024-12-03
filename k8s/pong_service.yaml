@@ -13,6 +13,13 @@ spec:
     name: pong-container
     ports:
       - containerPort: 50052
+      - containerPort: 50062
+    livenessProbe:
+      httpGet:
+        path: /healthz  # Specify the path for health check
+        port: 50062      # Use the healthPort defined above
+      initialDelaySeconds: 1
+      periodSeconds: 10
   restartPolicy: Always
   tolerations:
     - key: "disperser-v2"
@@ -30,7 +37,12 @@ spec:
     app: pong-app
   ports:
   - protocol: TCP
+    name: grpc
     port: 50052
     targetPort: 50052
+  - protocol: TCP
+    name: health
+    port: 50062
+    targetPort: 50062
   type: ClusterIP
 

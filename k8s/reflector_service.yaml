@@ -8,11 +8,18 @@ metadata:
     app: reflector-app
 spec:
   containers:
-  - image: ghcr.io/pschork/pingpong/ping:latest
+  - image: ghcr.io/pschork/pingpong/reflector:latest
     imagePullPolicy: Always
     name: reflector-container
     ports:
       - containerPort: 50057
+      - containerPort: 50067
+    livenessProbe:
+      httpGet:
+        path: /healthz  # Specify the path for health check
+        port: 50067      # Use the healthPort defined above
+      initialDelaySeconds: 1
+      periodSeconds: 10
   restartPolicy: Always
   tolerations:
     - key: "disperser-v2"
@@ -30,7 +37,12 @@ spec:
     app: reflector-app
   ports:
   - protocol: TCP
+    name: grpc
     port: 50057
     targetPort: 50057
+  - protocol: TCP
+    name: health
+    port: 50067
+    targetPort: 50067
   type: ClusterIP
 
