@@ -9,10 +9,7 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/backend-protocol-version: GRPC
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    #alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    #alb.ingress.kubernetes.io/healthcheck-path: /healthz
-    #alb.ingress.kubernetes.io/healthcheck-port: "50067"
-    #alb.ingress.kubernetes.io/certificate-arn: <arn>
+    alb.ingress.kubernetes.io/certificate-arn: arn:goes:here
 spec:
   ingressClassName: alb  # Specify ALB ingress class here
   rules:
