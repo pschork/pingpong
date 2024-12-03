@@ -1,0 +1,63 @@
+name: docker-publish-release
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force untagged release (expert mode)"
+        required: false
+        default: false
+        type: boolean
+
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Log into registry ${{ env.REGISTRY }}
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      if: ${{ success() }}
+
+    - name: Setup Buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
+        driver-opts: image=moby/buildkit:master
+
+    - name: Cache docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+      if: ${{ success() }}
+
+    - name: Set push flag
+      run: echo "PUSH_FLAG=--push" >> $GITHUB_ENV
+      if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.force == 'true'
+
+    - name: Display push flag
+      run: echo "${{ env.PUSH_FLAG }}"
+
+    # Build and (potentially) push
+    - name: Build docker image release
+      run: PUSH_FLAG=$PUSH_FLAG make docker_release

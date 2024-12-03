@@ -30,5 +30,20 @@ docker_build_pong:
 	docker build --target pong_service -t pong:latest .
 
 .PHONY: docker_build_reflector
-docker_build_reflector: 
+docker_build_reflector:
 	docker build --target reflector_service -t reflector:latest .
+
+.PHONY: docker_release
+docker_release: docker_release_ping docker_release_pong docker_release_reflector
+
+.PHONY: docker_release_ping
+docker_release_ping:
+	docker build ${PUSH_FLAG} --target ping_service -t ghcr.io/pschork/pingpong/ping:latest .
+
+.PHONY: docker_release_pong
+docker_release_pong:
+	docker build ${PUSH_FLAG} --target pong_service -t ghcr.io/pschork/pingpong/pong:latest .
+
+.PHONY: docker_release_reflector
+docker_release_reflector:
+	docker build ${PUSH_FLAG} --target reflector_service -t ghcr.io/pschork/pingpong/reflector:latest .
