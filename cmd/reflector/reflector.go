@@ -29,6 +29,7 @@ func main() {
 	pb.RegisterPongServiceServer(grpcServer, &server{})
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("OK")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))
 	})
