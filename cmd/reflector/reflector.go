@@ -3,12 +3,11 @@ package main
 import (
 	"log"
 	"net"
+	"net/http"
 
 	pb "pingpong/pingpong/pkg/pingpong"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -18,22 +17,26 @@ type server struct {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":50057")
+	port := ":50057"
+	health_port := ":50067"
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Failed to listen on port %s: %v", port, err)
 	}
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterPingServiceServer(grpcServer, &server{})
 	pb.RegisterPongServiceServer(grpcServer, &server{})
 
-	healthServer := health.NewServer()
-	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
-	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
-
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
+	go http.ListenAndServe(health_port, nil) // HTTP health check server
 	reflection.Register(grpcServer)
 
-	log.Println("Reflector is running with health on port :50057")
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	log.Printf("Reflector is running on port %s health %s", port, health_port)
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Failed to serve gRPC server: %v", err)
 	}
 }
