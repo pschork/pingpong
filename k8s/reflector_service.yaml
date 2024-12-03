@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: reflector-pod
+  namespace: disperser-v2
+  labels:
+    app: reflector-app
+spec:
+  containers:
+  - image: ghcr.io/pschork/pingpong/ping:latest
+    imagePullPolicy: IfNotPresent
+    name: reflector-container
+    ports:
+      - containerPort: 50057
+  restartPolicy: Always
+  tolerations:
+    - key: "disperser-v2"
+      operator: "Equal"
+      value: "1"
+      effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reflector-service
+  namespace: disperser-v2
+spec:
+  selector:
+    app: reflector-app
+  ports:
+  - protocol: TCP
+    port: 50057
+    targetPort: 50057
+  type: ClusterIP
+

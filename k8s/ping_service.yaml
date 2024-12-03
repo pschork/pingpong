@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ping-pod
+  namespace: disperser-v2
+  labels:
+    app: ping-app
+spec:
+  containers:
+  - image: ghcr.io/pschork/pingpong/ping:latest
+    imagePullPolicy: IfNotPresent
+    name: ping-container
+    ports:
+      - containerPort: 50051
+  restartPolicy: Always
+  tolerations:
+    - key: "disperser-v2"
+      operator: "Equal"
+      value: "1"
+      effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ping-service
+  namespace: disperser-v2
+spec:
+  selector:
+    app: ping-app
+  ports:
+  - protocol: TCP
+    port: 50051
+    targetPort: 50051
+  type: ClusterIP
+

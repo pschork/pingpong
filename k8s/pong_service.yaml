@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pong-pod
+  namespace: disperser-v2
+  labels:
+    app: pong-app
+spec:
+  containers:
+  - image: ghcr.io/pschork/pingpong/pong:latest
+    imagePullPolicy: IfNotPresent
+    name: pong-container
+    ports:
+      - containerPort: 50052
+  restartPolicy: Always
+  tolerations:
+    - key: "disperser-v2"
+      operator: "Equal"
+      value: "1"
+      effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pong-service
+  namespace: disperser-v2
+spec:
+  selector:
+    app: pong-app
+  ports:
+  - protocol: TCP
+    port: 50052
+    targetPort: 50052
+  type: ClusterIP
+
