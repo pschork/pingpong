@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ping-pong-ingress
+  namespace: disperser-v2
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing  # ALB will be internet-facing
+    alb.ingress.kubernetes.io/target-type: ip  # Target IPs (not instance ports)
+    alb.ingress.kubernetes.io/backend-protocol: HTTP #GRPC  # ALB should use GRPC protocol
+    #alb.ingress.kubernetes.io/healthcheck-path: /pingpong.PingService  # Optional: Healthcheck path
+spec:
+  ingressClassName: alb  # Specify ALB ingress class here
+  rules:
+  - http:
+      paths:
+      - path: /pingpong.PingService  # Path for PingService
+        pathType: Prefix
+        backend:
+          service:
+            name: ping-service
+            port:
+              number: 50051
+      - path: /pingpong.PongService  # Path for PongService
+        pathType: Prefix
+        backend:
+          service:
+            name: pong-service
+            port:
+              number: 50052
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: reflector-service
+            port:
+              number: 50057
