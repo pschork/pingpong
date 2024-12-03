@@ -27,7 +27,7 @@ spec:
             name: pong-service
             port:
               number: 50052
-      - path: /
+      - path: /grpc.reflection
         pathType: Prefix
         backend:
           service:
