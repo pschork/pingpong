@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
   - image: ghcr.io/pschork/pingpong/ping:latest
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: Always
     name: reflector-container
     ports:
       - containerPort: 50057
