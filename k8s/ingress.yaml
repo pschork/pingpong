@@ -6,8 +6,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing  # ALB will be internet-facing
     alb.ingress.kubernetes.io/target-type: ip  # Target IPs (not instance ports)
-    alb.ingress.kubernetes.io/backend-protocol: HTTP #GRPC  # ALB should use GRPC protocol
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/backend-protocol: GRPC #GRPC  # ALB should use GRPC protocol
+    alb.ingress.kubernetes.io/healthcheck-path: /grpc.health.v1.Health.Check
 spec:
   ingressClassName: alb  # Specify ALB ingress class here
   rules:

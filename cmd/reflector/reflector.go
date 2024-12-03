@@ -8,6 +8,8 @@ import (
 	pb "pingpong/pingpong/pkg/pingpong"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -27,6 +29,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterPingServiceServer(grpcServer, &server{})
 	pb.RegisterPongServiceServer(grpcServer, &server{})
+	grpc_health_v1.RegisterHealthServer(grpcServer, health.NewServer())
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("OK")
